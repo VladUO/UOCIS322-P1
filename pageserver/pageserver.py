@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 import socket    # Basic TCP/IP communication on the internet
 import _thread   # Response computation runs concurrently with main program
-
+import os        # importing os
 
 def listen(portnum):
     """
@@ -89,14 +89,37 @@ def respond(sock):
     log.info("--- Received request ----")
     log.info("Request was {}\n***\n".format(request))
 
-    parts = request.split()
-    if len(parts) > 1 and parts[0] == "GET":
-        transmit(STATUS_OK, sock)
-        transmit(CAT, sock)
+    parts = request.split()           #logging as shown in class
+    log.info(str(parts))              #output for the log
+
+    DOCROOT = get_options().DOCROOT   #getting DOCROOT using the get_options function
+    print('The DOCROOT is:',DOCROOT)
+
+    parts = request.split()           #splitting up the request address string into parts
+    file_address = DOCROOT + parts[1] #getting the address to the file
+
+    if len(parts) > 1 and parts[0] == "GET":      #checking if there is a request
+
+        # first thing we do is check for forbidden inputs
+        forbidden = ['//', '~', '..']             #making a list of forbidden inputs
+        if any(x in parts[1] for x in forbidden): #checking for those inputs in the address
+            transmit(STATUS_FORBIDDEN, sock)      #transmitting a status message if one is found
+            transmit('<h1> 403 FORBIDDEN ERROR </h1>', sock) #notifying the user
+
+        #if we did not find any forbidden inputs we check if the address ends in a .html or .css file
+        elif (('.html' in parts[1]) or ('.css' in parts[1])):
+            if os.path.isfile(file_address):
+                file = open(file_address, 'r')        #reading the file at address
+                transmit(STATUS_OK, sock)
+                transmit(file.read(), sock)
+                file.close()
+            else:
+                transmit(STATUS_NOT_FOUND, sock)
+                transmit('<h1> 404 FILE NOT FOUND </h1>', sock)
     else:
-        log.info("Unhandled request: {}".format(request))
-        transmit(STATUS_NOT_IMPLEMENTED, sock)
-        transmit("\nI don't handle this request: {}\n".format(request), sock)
+       log.info("Unhandled request: {}".format(request))
+       transmit(STATUS_NOT_IMPLEMENTED, sock)
+       transmit("\nI don't handle this request: {}\n".format(request), sock)
 
     sock.shutdown(socket.SHUT_RDWR)
     sock.close()
