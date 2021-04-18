@@ -5,5 +5,5 @@ Author: Vladimir Shatalov
 
 Address: vvs@uoregon.edu
 
-Description: the program currently returns the contents of a .HTML or .CSS file to the client. If the requested file is not found in the DOCROOT directory, the program returns a ì404 FILE NOT FOUND MESSAGEî. If the requested address has one of the forbidden combinations of characters contained within it (//, ~ or ..), the program returns a ì403 FORBIDDEN ERRORî.  
+Description: the program currently returns the contents of a .HTML or .CSS file to the client. If the requested file is not found in the DOCROOT directory, the program returns a ‚Äú404 FILE NOT FOUND‚Äù message. If the requested address has one of the forbidden combinations of characters contained within it (//, ~ or ..), the program returns a ‚Äú403 FORBIDDEN ERROR‚Äù.  
 
