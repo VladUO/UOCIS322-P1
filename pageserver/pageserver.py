@@ -101,21 +101,21 @@ def respond(sock):
     if len(parts) > 1 and parts[0] == "GET":      #checking if there is a request
 
         # first thing we do is check for forbidden inputs
-        forbidden = ['//', '~', '..']             #making a list of forbidden inputs
-        if any(x in parts[1] for x in forbidden): #checking for those inputs in the address
-            transmit(STATUS_FORBIDDEN, sock)      #transmitting a status message if one is found
+        forbidden = ['//', '~', '..']                        #making a list of forbidden inputs
+        if any(x in parts[1] for x in forbidden):            #checking for those inputs in the address
+            transmit(STATUS_FORBIDDEN, sock)                 #transmitting a status message if one is found
             transmit('<h1> 403 FORBIDDEN ERROR </h1>', sock) #notifying the user
 
         #if we did not find any forbidden inputs we check if the address ends in a .html or .css file
         elif (('.html' in parts[1]) or ('.css' in parts[1])):
-            if os.path.isfile(file_address):
-                file = open(file_address, 'r')        #reading the file at address
-                transmit(STATUS_OK, sock)
-                transmit(file.read(), sock)
-                file.close()
-            else:
-                transmit(STATUS_NOT_FOUND, sock)
-                transmit('<h1> 404 FILE NOT FOUND </h1>', sock)
+            if os.path.isfile(file_address):                     #checking of there is a file at the address
+                file = open(file_address, 'r')                   #reading the file at address
+                transmit(STATUS_OK, sock)                        #transmitting the ok status to socket
+                transmit(file.read(), sock)                      #transmitting the contents of the file to socket
+                file.close()                                     #closing the file
+            else:                                                #otherwise the file has not been found
+                transmit(STATUS_NOT_FOUND, sock)                 #transmitting the status to socket
+                transmit('<h1> 404 FILE NOT FOUND </h1>', sock)  #notifying the user
     else:
        log.info("Unhandled request: {}".format(request))
        transmit(STATUS_NOT_IMPLEMENTED, sock)
